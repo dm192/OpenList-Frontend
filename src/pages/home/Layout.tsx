@@ -21,12 +21,14 @@ const Index = () => {
     }
   })
   return (
-    <>
+    <div class="home-shell">
       <Header />
       <Toolbar />
-      <Body />
+      <main class="home-main">
+        <Body />
+      </main>
       <Footer />
-    </>
+    </div>
   )
 }
 

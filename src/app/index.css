@@ -53,6 +53,94 @@
   animation: fullscreen-loading-in 180ms ease-out both;
 }
 
+.home-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.home-main {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.home-body-container {
+  display: flex;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.home-body {
+  flex: 0 1 auto;
+  min-height: auto;
+}
+
+.home-body .readme-card,
+.home-body .nav {
+  flex: 0 0 auto;
+}
+
+.obj-scroll-region {
+  min-height: 0;
+  max-height: min(68vh, calc(100dvh - 220px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--hope-colors-info9), transparent 34%)
+    transparent;
+}
+
+.obj-scroll-region::-webkit-scrollbar {
+  width: 8px;
+  height: 0;
+}
+
+.obj-scroll-region::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.obj-scroll-region::-webkit-scrollbar-thumb {
+  min-height: 42px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(
+      color-mix(in srgb, var(--hope-colors-info9), transparent 24%),
+      color-mix(in srgb, var(--hope-colors-info9), white 8%)
+    )
+    padding-box;
+}
+
+.obj-scroll-region::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+      var(--hope-colors-info9),
+      var(--hope-colors-info10)
+    )
+    padding-box;
+}
+
+.obj-scroll-region::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.obj-scroll-region .list,
+.obj-scroll-region .list-item,
+.obj-scroll-region .grid-item,
+.obj-scroll-region .image-item,
+.obj-scroll-region .viselect-container {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .fullscreen-loading__content {
   min-width: 160px;
   padding: 22px;
@@ -89,7 +177,11 @@
   width: var(--azure-spinner-size);
   height: var(--azure-spinner-size);
   color: var(--azure-spinner-color);
-  animation: azure-spinner-rotate 1.35s linear infinite;
+  animation: azure-spinner-rotate 1.05s linear infinite;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  transform-origin: 50% 50%;
+  will-change: transform;
 }
 
 .azure-spinner__svg {
@@ -114,43 +206,34 @@
 .azure-spinner__arc {
   stroke: currentColor;
   stroke-linecap: round;
-  stroke-dasharray: 18 126;
+  stroke-dasharray: 58 126;
   stroke-dashoffset: 0;
   transform-origin: 50% 50%;
-  animation: azure-spinner-arc 1.35s cubic-bezier(0.36, 0, 0.18, 1) infinite;
+  animation: azure-spinner-arc 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: stroke-dashoffset, opacity;
 }
 
 @keyframes azure-spinner-rotate {
   0% {
-    transform: rotate(0deg);
+    transform: translateZ(0) rotate(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: translateZ(0) rotate(360deg);
   }
 }
 
 @keyframes azure-spinner-arc {
   0% {
-    stroke-dasharray: 2 126;
     stroke-dashoffset: 0;
-    opacity: 0.62;
-    transform: rotate(0deg);
+    opacity: 0.82;
   }
-  38% {
-    stroke-dasharray: 76 126;
-    stroke-dashoffset: -28;
+  45% {
+    stroke-dashoffset: -54;
     opacity: 1;
   }
-  72% {
-    stroke-dasharray: 28 126;
-    stroke-dashoffset: -96;
-    opacity: 0.9;
-  }
   100% {
-    stroke-dasharray: 2 126;
     stroke-dashoffset: -126;
-    opacity: 0.62;
-    transform: rotate(360deg);
+    opacity: 0.82;
   }
 }
 
@@ -291,14 +374,23 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: inherit;
   background: rgba(248, 250, 252, 0.58);
   backdrop-filter: blur(2px);
   animation: scoped-loading-in 140ms ease-out both;
   pointer-events: none;
+}
+
+.scoped-loading-overlay__indicator {
+  position: fixed;
+  top: 50vh;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, -50%);
 }
 
 .hope-ui-dark .scoped-loading-overlay {

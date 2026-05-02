@@ -5,9 +5,9 @@
   "name": "OpenList",
   "icons": [
     {
-      "src": "https://res.oplist.org/logo/512x512.png",
+      "src": "https://img-res.dormant.top/generic/oplist-logo.svg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml"
     }
   ]
 }

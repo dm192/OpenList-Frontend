@@ -14,7 +14,6 @@ import { PackageDownloadModal } from "./Download"
 import { lazy } from "solid-js"
 import { ModalWrapper } from "./ModalWrapper"
 import { LocalSettings } from "./LocalSettings"
-import { BackTop } from "./BackTop"
 import { Decompress } from "./Decompress"
 import { Share } from "./Share"
 
@@ -50,7 +49,6 @@ export const Toolbar = () => {
       <Right />
       <Center />
       <Modal />
-      <BackTop />
     </Portal>
   )
 }

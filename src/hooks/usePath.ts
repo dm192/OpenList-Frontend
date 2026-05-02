@@ -11,6 +11,8 @@ import {
   recoverHistory,
   clearHistory,
   me,
+  getHomeScrollTop,
+  setHomeScrollTop,
 } from "~/store"
 import {
   fsGet,
@@ -217,7 +219,7 @@ export const usePath = () => {
     setPathAs,
     refresh: async (retry_pass?: boolean, force?: boolean) => {
       const path = pathname()
-      const scroll = window.scrollY
+      const scroll = getHomeScrollTop()
       clearHistory(path, globalPage)
       if (
         pagination.type === "load_more" ||
@@ -232,7 +234,7 @@ export const usePath = () => {
       } else {
         await handlePathChange(path, globalPage, retry_pass, force)
       }
-      window.scroll({ top: scroll, behavior: "smooth" })
+      setHomeScrollTop(scroll, "smooth")
     },
     loadMore,
     allLoaded: () => globalPage >= Math.ceil(objStore.total / pagination.size),

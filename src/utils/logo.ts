@@ -1,6 +1,7 @@
 import { getSetting } from "~/store"
 
-export const DEFAULT_LOGO = "https://res.oplist.org/logo/logo.svg"
+export const DEFAULT_LOGO =
+  "https://img-res.dormant.top/generic/oplist-logo.svg"
 
 export const getConfiguredLogos = () => {
   const logos = getSetting("logo")

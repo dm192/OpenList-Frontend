@@ -7,6 +7,7 @@ import { useLink, useRouter, useTitle } from "~/hooks"
 import { getMainColor, getSetting, getSettingBool, objStore } from "~/store"
 import { ObjType, StoreObj } from "~/types"
 import { baseName, fsGet } from "~/utils"
+import { DEFAULT_LOGO } from "~/utils/logo"
 
 const Preview = () => {
   const { proxyLink, rawLink, previewPage } = useLink()
@@ -37,10 +38,7 @@ const Preview = () => {
     if (coverObj) {
       cover = rawLink(coverObj, true)
     } else {
-      cover =
-        obj.thumb ||
-        getSetting("audio_cover") ||
-        "https://res.oplist.org/logo/logo.svg"
+      cover = obj.thumb || getSetting("audio_cover") || DEFAULT_LOGO
     }
     const audio = {
       name: obj.name,

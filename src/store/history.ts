@@ -13,6 +13,21 @@ const waitForNextFrame = () => {
   return new Promise((resolve) => setTimeout(resolve))
 }
 
+export const getHomeScrollContainer = () =>
+  document.querySelector<HTMLElement>(".obj-scroll-region")
+
+export const getHomeScrollTop = () =>
+  getHomeScrollContainer()?.scrollTop ?? window.scrollY
+
+export const setHomeScrollTop = (top: number, behavior?: ScrollBehavior) => {
+  const container = getHomeScrollContainer()
+  if (container) {
+    container.scrollTo({ top, behavior })
+    return
+  }
+  window.scroll({ top, behavior })
+}
+
 export const getHistoryKey = (path: string, page?: number) => {
   const pathname = path.split("?")[0]
   return page && page > 1 ? `${pathname}?page=${page}` : pathname
@@ -32,7 +47,7 @@ export const recordHistory = (path: string, page?: number) => {
   const history = {
     obj,
     page: page ?? getGlobalPage(),
-    scroll: window.scrollY,
+    scroll: getHomeScrollTop(),
   }
   HistoryMap.set(key, history)
   console.log(`record history: [${key}]`)
@@ -47,7 +62,7 @@ export const recoverHistory = async (path: string, page?: number) => {
   await waitForNextFrame()
   ObjStore.set(JSON.parse(JSON.stringify(history.obj)))
   await waitForNextFrame()
-  window.scroll({ top: history.scroll })
+  setHomeScrollTop(history.scroll)
 }
 
 export const hasHistory = (path: string, page?: number) => {

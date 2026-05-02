@@ -40,7 +40,9 @@ export { objBoxRef }
 const ScopedLoadingOverlay = () => {
   return (
     <Box class="scoped-loading-overlay">
-      <AzureLoadingSpinner size="md" />
+      <Box class="scoped-loading-overlay__indicator">
+        <AzureLoadingSpinner size="md" />
+      </Box>
     </Box>
   )
 }
@@ -113,66 +115,68 @@ export const Obj = () => {
       pos="relative"
       overflow="hidden"
     >
-      <Suspense fallback={<FullLoading />}>
-        <Switch>
-          <Match when={objStore.err}>
-            <Error
-              msg={objStore.err}
-              disableColor
-              actions={
-                shouldShowStorageButton() ? storageErrorActions() : undefined
-              }
-            />
-          </Match>
-          <Match
-            when={[State.FetchingObj, State.FetchingObjs].includes(
-              objStore.state,
-            )}
-          >
-            <Show when={hasRetainedContent()} fallback={<FullLoading />}>
-              <Show when={objStore.objs.length > 0} fallback={<File />}>
-                <Folder />
+      <Box class="obj-scroll-region" w="$full" h="$full">
+        <Suspense fallback={<FullLoading />}>
+          <Switch>
+            <Match when={objStore.err}>
+              <Error
+                msg={objStore.err}
+                disableColor
+                actions={
+                  shouldShowStorageButton() ? storageErrorActions() : undefined
+                }
+              />
+            </Match>
+            <Match
+              when={[State.FetchingObj, State.FetchingObjs].includes(
+                objStore.state,
+              )}
+            >
+              <Show when={hasRetainedContent()} fallback={<FullLoading />}>
+                <Show when={objStore.objs.length > 0} fallback={<File />}>
+                  <Folder />
+                </Show>
               </Show>
-            </Show>
-            {/* <Show when={layout() === "list"} fallback={<GridSkeleton />}>
+              {/* <Show when={layout() === "list"} fallback={<GridSkeleton />}>
               <ListSkeleton />
             </Show> */}
-          </Match>
-          <Match when={objStore.state === State.NeedPassword}>
-            <Password
-              title={
-                isShare()
-                  ? t("shares.input_password")
-                  : t("home.input_password")
-              }
-              password={password}
-              setPassword={setPassword}
-              enterCallback={() => refresh(true)}
+            </Match>
+            <Match when={objStore.state === State.NeedPassword}>
+              <Password
+                title={
+                  isShare()
+                    ? t("shares.input_password")
+                    : t("home.input_password")
+                }
+                password={password}
+                setPassword={setPassword}
+                enterCallback={() => refresh(true)}
+              >
+                <Show when={!isShare()}>
+                  <Text>{t("global.have_account")}</Text>
+                  <Text
+                    color="$info9"
+                    as={LinkWithBase}
+                    href={`/@login?redirect=${encodeURIComponent(
+                      location.pathname,
+                    )}`}
+                  >
+                    {t("global.go_login")}
+                  </Text>
+                </Show>
+              </Password>
+            </Match>
+            <Match
+              when={[State.Folder, State.FetchingMore].includes(objStore.state)}
             >
-              <Show when={!isShare()}>
-                <Text>{t("global.have_account")}</Text>
-                <Text
-                  color="$info9"
-                  as={LinkWithBase}
-                  href={`/@login?redirect=${encodeURIComponent(
-                    location.pathname,
-                  )}`}
-                >
-                  {t("global.go_login")}
-                </Text>
-              </Show>
-            </Password>
-          </Match>
-          <Match
-            when={[State.Folder, State.FetchingMore].includes(objStore.state)}
-          >
-            <Folder />
-          </Match>
-          <Match when={objStore.state === State.File}>
-            <File />
-          </Match>
-        </Switch>
-      </Suspense>
+              <Folder />
+            </Match>
+            <Match when={objStore.state === State.File}>
+              <File />
+            </Match>
+          </Switch>
+        </Suspense>
+      </Box>
       <Show when={isFetchingObject() && hasRetainedContent()}>
         <ScopedLoadingOverlay />
       </Show>

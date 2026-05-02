@@ -7,15 +7,16 @@ import { Sidebar } from "./Sidebar"
 
 export const Body = () => {
   return (
-    <Container>
+    <Container class="home-body-container">
       <VStack
-        class="body"
+        class="body home-body"
         mt="$1"
         py="$2"
         px="2%"
-        minH="80vh"
+        minH="auto"
         w="$full"
         gap="$4"
+        overflow="hidden"
       >
         <Readme files={["header.md", "top.md", "index.md"]} fromMeta="header" />
         <Nav />
