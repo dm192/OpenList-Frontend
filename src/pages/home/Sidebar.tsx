@@ -82,7 +82,7 @@ function SidebarPanel() {
       overflow="auto"
       shadow="$lg"
       rounded="$lg"
-      bgColor="white"
+      class="home-sidebar-surface"
       _dark={{ bgColor: "$neutral3" }}
       onMouseEnter={showFullSidebar}
       onMouseLeave={resetSidebar}

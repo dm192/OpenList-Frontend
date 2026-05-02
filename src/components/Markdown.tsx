@@ -123,7 +123,7 @@ function MarkdownToc(props: {
           p="$2"
           shadow="$outline"
           rounded="$lg"
-          bgColor="white"
+          class="markdown-toc-surface"
           _dark={{ bgColor: "$neutral3" }}
         >
           <List maxH="60vh" overflowY="auto">

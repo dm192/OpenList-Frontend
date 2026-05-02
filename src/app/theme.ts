@@ -123,7 +123,11 @@ const theme: HopeThemeConfig = {
       baseStyle: {
         root: {
           rounded: "$lg",
-          border: "unset",
+          backgroundColor: "var(--openlist-surface-strong)",
+          border: "1px solid var(--openlist-surface-border)",
+          backdropFilter: "saturate(155%) blur(20px)",
+          WebkitBackdropFilter: "saturate(155%) blur(20px)",
+          boxShadow: "var(--openlist-surface-shadow)",
         },
       },
     },
@@ -234,8 +238,9 @@ export const globalStyles = globalCss({
       "linear-gradient(135deg, rgba(9, 14, 24, 0.99), rgba(15, 23, 42, 0.99) 52%, rgba(11, 27, 40, 0.97))",
     "&::before": {
       background:
-        "radial-gradient(circle at 18% 12%, rgba(37, 99, 235, 0.13), transparent 31%), radial-gradient(circle at 86% 16%, rgba(20, 184, 166, 0.08), transparent 27%), radial-gradient(circle at 48% 88%, rgba(45, 212, 191, 0.045), transparent 30%), linear-gradient(rgba(147, 197, 253, 0.032) 1px, transparent 1px), linear-gradient(90deg, rgba(94, 234, 212, 0.028) 1px, transparent 1px)",
-      backgroundSize: "120% 120%, 120% 120%, 130% 130%, 64px 64px, 64px 64px",
+        "var(--openlist-overlay), radial-gradient(circle at 18% 12%, rgba(37, 99, 235, 0.13), transparent 31%), radial-gradient(circle at 86% 16%, rgba(20, 184, 166, 0.08), transparent 27%), radial-gradient(circle at 48% 88%, rgba(45, 212, 191, 0.045), transparent 30%), var(--openlist-bg-image)",
+      backgroundPosition: "center, 0% 0%, 100% 0%, 50% 100%, center center",
+      backgroundSize: "auto, 120% 120%, 120% 120%, 130% 130%, cover",
     },
     "&::after": {
       background:
@@ -279,6 +284,7 @@ export const globalStyles = globalCss({
     backgroundColor: "var(--openlist-surface) !important",
     border: "1px solid var(--openlist-surface-border)",
     backdropFilter: "saturate(135%) blur(18px)",
+    WebkitBackdropFilter: "saturate(135%) blur(18px)",
     boxShadow:
       "var(--openlist-surface-shadow), 0 1px 0 rgba(255, 255, 255, 0.22) inset",
   },
@@ -299,13 +305,17 @@ export const globalStyles = globalCss({
       boxShadow:
         "var(--openlist-surface-shadow), 0 1px 0 rgba(255, 255, 255, 0.045) inset",
     },
-  ".hope-modal__content, .hope-drawer__content, .hope-menu__content, .hope-popover__content, .hope-select__content, .hope-notification, .left-toolbar, .center-toolbar-surface, .error-card, .manage-shell, .manage-sidebar, .manage-header":
+  ".hope-modal__content, .hope-drawer__content, .hope-menu__content, .hope-popover__content, .hope-select__content, .hope-notification, .left-toolbar, .center-toolbar-surface, .error-card, .manage-shell, .manage-sidebar, .manage-header, .home-sidebar-surface, .markdown-toc-surface":
     {
       backgroundColor: "var(--openlist-surface-strong) !important",
       border: "1px solid var(--openlist-surface-border)",
-      backdropFilter: "saturate(135%) blur(18px)",
+      backdropFilter: "saturate(155%) blur(20px)",
+      WebkitBackdropFilter: "saturate(155%) blur(20px)",
       boxShadow: "var(--openlist-surface-shadow)",
     },
+  ".hope-notification": {
+    overflow: "hidden",
+  },
   ".manage-shell": {
     minHeight: "100vh",
   },

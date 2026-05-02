@@ -10,7 +10,7 @@ import {
 } from "@hope-ui/solid"
 import { JSXElement } from "solid-js"
 import { getMainColor } from "~/store"
-import { alphaBgColor, firstUpperCase } from "."
+import { firstUpperCase } from "."
 
 const ANNOUNCEMENT_DURATION = 15000
 
@@ -22,9 +22,11 @@ const notify = {
           <Box
             css={{
               display: "flex",
-              backdropFilter: "blur(8px)",
-              backgroundColor: alphaBgColor(),
-              boxShadow: "$md",
+              backdropFilter: "saturate(155%) blur(20px)",
+              WebkitBackdropFilter: "saturate(155%) blur(20px)",
+              backgroundColor: "var(--openlist-surface-strong)",
+              border: "1px solid var(--openlist-surface-border)",
+              boxShadow: "var(--openlist-surface-shadow)",
               borderRadius: "$lg",
               padding: "$3",
             }}
@@ -70,11 +72,12 @@ const notify = {
               position: "relative",
               display: "flex",
               overflow: "hidden",
-              backdropFilter: "blur(12px)",
-              backgroundColor: alphaBgColor(),
+              backdropFilter: "saturate(160%) blur(22px)",
+              WebkitBackdropFilter: "saturate(160%) blur(22px)",
+              backgroundColor: "var(--openlist-surface-strong)",
               boxShadow:
-                "0 14px 34px rgba(15, 23, 42, 0.1), 0 1px 0 rgba(255, 255, 255, 0.28) inset",
-              border: "1px solid rgba(148, 163, 184, 0.18)",
+                "var(--openlist-surface-shadow), 0 1px 0 rgba(255, 255, 255, 0.22) inset",
+              border: "1px solid var(--openlist-surface-border)",
               borderRadius: "$lg",
               padding: "$3",
               paddingBottom: "$4",

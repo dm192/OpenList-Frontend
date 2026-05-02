@@ -81,10 +81,7 @@ export const prepareAppBackground = async (mode: BackgroundMode) => {
       return false
     }
     const imageUrl = await loadBackgroundImage(mode)
-    document.documentElement.style.setProperty(
-      "--openlist-bg-image",
-      `url("${imageUrl}")`,
-    )
+    document.body.style.setProperty("--openlist-bg-image", `url("${imageUrl}")`)
     document.body.dataset.backgroundMode = mode
     setBackgroundStatus("ready")
     return true
