@@ -23,6 +23,7 @@ import {
   base_path,
   handleResp,
   hashPwd,
+  getConfiguredLogos,
 } from "~/utils"
 import { PResp, Resp } from "~/types"
 import LoginBg from "./LoginBg"
@@ -39,14 +40,17 @@ import {
 } from "@github/webauthn-json/browser-ponyfill"
 
 const Login = () => {
-  const logos = getSetting("logo").split("\n")
-  const logo = useColorModeValue(logos[0], logos.pop())
+  const logos = getConfiguredLogos()
+  const logo = useColorModeValue(logos.light, logos.dark)
   const t = useT()
   const title = createMemo(() => {
     return `${t("login.login_to")} ${getSetting("site_title")}`
   })
   useTitle(title)
-  const bgColor = useColorModeValue("white", "$neutral1")
+  const bgColor = useColorModeValue(
+    "rgba(255, 255, 255, 0.78)",
+    "rgba(17, 24, 39, 0.72)",
+  )
   const [username, setUsername] = createSignal(
     localStorage.getItem("username") || "",
   )
@@ -226,8 +230,9 @@ const Login = () => {
   }
 
   return (
-    <Center zIndex="1" w="$full" h="100vh">
+    <Center class="login-shell" zIndex="1" w="$full" minH="100vh" px="$4">
       <VStack
+        class="login-card"
         bgColor={bgColor()}
         rounded="$xl"
         p="24px"
@@ -237,12 +242,12 @@ const Login = () => {
         }}
         spacing="$4"
       >
-        <Flex alignItems="center" justifyContent="space-around">
-          <Image mr="$2" boxSize="$12" src={logo()} />
-          <Heading color="$info9" fontSize="$2xl">
+        <VStack class="login-brand" spacing="$2" w="$full">
+          <Image boxSize="$12" src={logo()} />
+          <Heading class="login-title" color="$info9" fontSize="$xl">
             {title()}
           </Heading>
-        </Flex>
+        </VStack>
         <Show
           when={!needOpt()}
           fallback={

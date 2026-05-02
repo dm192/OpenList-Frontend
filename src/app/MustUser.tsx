@@ -3,16 +3,16 @@ import { Error, FullScreenLoading } from "~/components"
 import { useFetch, useT } from "~/hooks"
 import { Me, setMe } from "~/store"
 import { PResp } from "~/types"
+import { UserRole } from "~/types/user"
 import { r, handleResp, handleRespWithoutAuthAndNotify } from "~/utils"
 
 const MustUser = (props: { children: JSXElement }) => {
   const t = useT()
   const [loading, data] = useFetch((): PResp<Me> => r.get("/me"))
   const [err, setErr] = createSignal<string>()
-  ;(async () => {
-    // const resp: Resp<User> = await data();
+  onMount(async () => {
     handleResp(await data(), setMe, setErr)
-  })()
+  })
   return (
     <Switch fallback={props.children}>
       <Match when={loading()}>
@@ -35,10 +35,11 @@ const UserOrGuest = (props: { children: JSXElement }) => {
         username: "guest",
         password: "",
         base_path: "/",
-        role: 1,
+        role: UserRole.GUEST,
         disabled: false,
         permission: 0,
         sso_id: "",
+        allow_ldap: false,
         otp: false,
       })
       setSkipLogin(true)

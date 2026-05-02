@@ -6,6 +6,7 @@ const LoginBg = () => {
   const bgColor = useColorModeValue("#a9c6ff", "#062b74")
   return (
     <Box
+      class="login-bg"
       bgColor={bgColor()}
       pos="fixed"
       top="0"

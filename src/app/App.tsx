@@ -7,6 +7,7 @@ import {
   lazy,
   Match,
   onCleanup,
+  onMount,
   Switch,
 } from "solid-js"
 import { Portal } from "solid-js/web"
@@ -24,6 +25,38 @@ const Home = lazy(() => import("~/pages/home/Layout"))
 const Manage = lazy(() => import("~/pages/manage"))
 const Login = lazy(() => import("~/pages/login"))
 const Test = lazy(() => import("~/pages/test"))
+let initialized = false
+
+const AppRoutes = () => (
+  <Routes base={base_path}>
+    <Route path="/@test" component={Test} />
+    <Route path="/@login" component={Login} />
+    <Route
+      path="/@manage/*"
+      element={
+        <MustUser>
+          <Manage />
+        </MustUser>
+      }
+    />
+    <Route
+      path={["/@s/*", "/%40s/*"]}
+      element={
+        <UserOrGuest>
+          <Home />
+        </UserOrGuest>
+      }
+    />
+    <Route
+      path="*"
+      element={
+        <MustUser>
+          <Home />
+        </MustUser>
+      }
+    />
+  </Routes>
+)
 
 const App: Component = () => {
   const t = useT()
@@ -61,7 +94,11 @@ const App: Component = () => {
       })(),
     ]),
   )
-  data()
+  onMount(async () => {
+    if (initialized) return
+    initialized = true
+    await data()
+  })
   return (
     <>
       <Portal>
@@ -78,38 +115,7 @@ const App: Component = () => {
           <ProgressIndicator />
         </Progress>
       </Portal>
-      <Switch
-        fallback={
-          <Routes base={base_path}>
-            <Route path="/@test" component={Test} />
-            <Route path="/@login" component={Login} />
-            <Route
-              path="/@manage/*"
-              element={
-                <MustUser>
-                  <Manage />
-                </MustUser>
-              }
-            />
-            <Route
-              path={["/@s/*", "/%40s/*"]}
-              element={
-                <UserOrGuest>
-                  <Home />
-                </UserOrGuest>
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <MustUser>
-                  <Home />
-                </MustUser>
-              }
-            />
-          </Routes>
-        }
-      >
+      <Switch fallback={<AppRoutes />}>
         <Match when={err().length > 0}>
           <Error
             h="100vh"

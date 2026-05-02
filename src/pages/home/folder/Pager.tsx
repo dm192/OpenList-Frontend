@@ -1,5 +1,5 @@
 import { Button, Text } from "@hope-ui/solid"
-import { Match, onCleanup, onMount, Show, Switch } from "solid-js"
+import { createSignal, Match, onCleanup, onMount, Show, Switch } from "solid-js"
 import { FullLoading, Paginator } from "~/components"
 import { getGlobalPage, usePath, useRouter, useT } from "~/hooks"
 import { clearHistory, getPagination, objStore, State } from "~/store"
@@ -22,12 +22,24 @@ const Pagination = () => {
 const LoadMore = () => {
   const { loadMore, allLoaded } = usePath()
   const t = useT()
+  const [loading, setLoading] = createSignal(false)
+  const onLoadMore = async () => {
+    if (loading()) return
+    setLoading(true)
+    try {
+      await loadMore()
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <Show
       when={!allLoaded()}
       fallback={<Text fontStyle="italic">{t("home.no_more")}</Text>}
     >
-      <Button onClick={loadMore}>{t("home.load_more")}</Button>
+      <Button loading={loading()} onClick={onLoadMore}>
+        {t("home.load_more")}
+      </Button>
     </Show>
   )
 }

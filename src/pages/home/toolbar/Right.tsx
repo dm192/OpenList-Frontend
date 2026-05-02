@@ -1,5 +1,5 @@
 import { Box, createDisclosure, VStack } from "@hope-ui/solid"
-import { createMemo, Show } from "solid-js"
+import { createMemo, createSignal, Show } from "solid-js"
 import { RightIcon } from "./Icon"
 import { CgMoreO } from "solid-icons/cg"
 import { TbCheckbox } from "solid-icons/tb"
@@ -11,7 +11,7 @@ import { AiOutlineCloudUpload, AiOutlineSetting } from "solid-icons/ai"
 import { RiSystemRefreshLine } from "solid-icons/ri"
 import { usePath, useRouter } from "~/hooks"
 import { Motion } from "solid-motionone"
-import { isTocVisible, setTocDisabled } from "~/components"
+import { AzureLoadingSpinner, isTocVisible, setTocDisabled } from "~/components"
 import { BiSolidBookContent } from "solid-icons/bi"
 
 export const Right = () => {
@@ -24,6 +24,16 @@ export const Right = () => {
   const isFolder = createMemo(() => objStore.state === State.Folder)
   const { refresh } = usePath()
   const { isShare } = useRouter()
+  const [refreshing, setRefreshing] = createSignal(false)
+  const onRefresh = async () => {
+    if (refreshing()) return
+    setRefreshing(true)
+    try {
+      await refresh(undefined, true)
+    } finally {
+      setRefreshing(false)
+    }
+  }
   return (
     <Box
       class="left-toolbar-box"
@@ -67,13 +77,20 @@ export const Right = () => {
                 objStore.write
               }
             >
-              <RightIcon
-                as={RiSystemRefreshLine}
-                tips="refresh"
-                onClick={() => {
-                  refresh(undefined, true)
-                }}
-              />
+              <Show
+                when={!refreshing()}
+                fallback={
+                  <Box class="toolbar-loading-icon">
+                    <AzureLoadingSpinner size="sm" />
+                  </Box>
+                }
+              >
+                <RightIcon
+                  as={RiSystemRefreshLine}
+                  tips="refresh"
+                  onClick={onRefresh}
+                />
+              </Show>
               <RightIcon
                 as={operations.new_file.icon}
                 tips="new_file"

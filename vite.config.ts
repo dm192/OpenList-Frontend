@@ -1,5 +1,6 @@
 import path from "path"
 import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
 import solidPlugin from "vite-plugin-solid"
 import legacy from "@vitejs/plugin-legacy"
 import { dynamicBase } from "vite-plugin-dynamic-base"
@@ -42,6 +43,7 @@ export default defineConfig({
   },
   plugins: [
     solidPlugin(),
+    react(),
     legacy({
       targets: ["defaults"],
     }),

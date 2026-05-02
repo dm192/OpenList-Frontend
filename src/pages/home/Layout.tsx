@@ -16,7 +16,7 @@ const Index = () => {
 
   onMount(() => {
     if (announcement && !announcementShown) {
-      notify.render(() => <Markdown children={announcement} />)
+      notify.announcement(() => <Markdown children={announcement} />)
       announcementShown = true
     }
   })

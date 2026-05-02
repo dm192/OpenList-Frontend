@@ -55,7 +55,14 @@ export function Readme(props: {
   const [content] = createResource(readme, fetchContent)
   return (
     <Show when={getSettingBool("readme_autorender") && readme()}>
-      <Box w="$full" rounded="$xl" p="$4" bgColor={cardBg()} shadow="$lg">
+      <Box
+        class="readme-card"
+        w="$full"
+        rounded="$xl"
+        p="$4"
+        bgColor={cardBg()}
+        shadow="$lg"
+      >
         <MaybeLoading loading={content.loading}>
           <Markdown
             children={content()?.content}

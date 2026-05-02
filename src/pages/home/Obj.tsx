@@ -1,4 +1,4 @@
-import { Text, useColorModeValue, VStack, Button } from "@hope-ui/solid"
+import { Box, Text, useColorModeValue, VStack, Button } from "@hope-ui/solid"
 import {
   createEffect,
   createMemo,
@@ -10,7 +10,12 @@ import {
   Suspense,
   Switch,
 } from "solid-js"
-import { Error, FullLoading, LinkWithBase } from "~/components"
+import {
+  AzureLoadingSpinner,
+  Error,
+  FullLoading,
+  LinkWithBase,
+} from "~/components"
 import { useObjTitle, usePath, useRouter, useT } from "~/hooks"
 import {
   getPagination,
@@ -31,6 +36,14 @@ const Password = lazy(() => import("./Password"))
 
 const [objBoxRef, setObjBoxRef] = createSignal<HTMLDivElement>()
 export { objBoxRef }
+
+const ScopedLoadingOverlay = () => {
+  return (
+    <Box class="scoped-loading-overlay">
+      <AzureLoadingSpinner size="md" />
+    </Box>
+  )
+}
 
 export const Obj = () => {
   const t = useT()
@@ -70,6 +83,17 @@ export const Obj = () => {
   const shouldShowStorageButton = createMemo(() => {
     return isStorageError() && UserMethods.is_admin(me())
   })
+  const isFetchingObject = createMemo(() =>
+    [State.FetchingObj, State.FetchingObjs].includes(objStore.state),
+  )
+  const hasRetainedContent = createMemo(
+    () =>
+      objStore.objs.length > 0 ||
+      !!objStore.raw_url ||
+      objStore.state === State.File ||
+      objStore.state === State.Folder ||
+      objStore.state === State.FetchingMore,
+  )
 
   const storageErrorActions = () => (
     <Button colorScheme="accent" onClick={() => to("/@manage/storages")}>
@@ -86,6 +110,8 @@ export const Obj = () => {
       p="$2"
       shadow="$lg"
       spacing="$2"
+      pos="relative"
+      overflow="hidden"
     >
       <Suspense fallback={<FullLoading />}>
         <Switch>
@@ -103,7 +129,11 @@ export const Obj = () => {
               objStore.state,
             )}
           >
-            <FullLoading />
+            <Show when={hasRetainedContent()} fallback={<FullLoading />}>
+              <Show when={objStore.objs.length > 0} fallback={<File />}>
+                <Folder />
+              </Show>
+            </Show>
             {/* <Show when={layout() === "list"} fallback={<GridSkeleton />}>
               <ListSkeleton />
             </Show> */}
@@ -143,6 +173,9 @@ export const Obj = () => {
           </Match>
         </Switch>
       </Suspense>
+      <Show when={isFetchingObject() && hasRetainedContent()}>
+        <ScopedLoadingOverlay />
+      </Show>
     </VStack>
   )
 }
