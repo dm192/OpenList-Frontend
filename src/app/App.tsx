@@ -1,4 +1,4 @@
-import { Progress, ProgressIndicator } from "@hope-ui/solid"
+import { Progress, ProgressIndicator, useColorMode } from "@hope-ui/solid"
 import { Route, Routes, useIsRouting } from "@solidjs/router"
 import {
   Component,
@@ -16,7 +16,13 @@ import { useLoading, useRouter, useT } from "~/hooks"
 import { setSettings } from "~/store"
 import { setArchiveExtensions } from "~/store/archive"
 import { Resp } from "~/types"
-import { base_path, bus, handleRespWithoutAuthAndNotify, r } from "~/utils"
+import {
+  base_path,
+  bus,
+  handleRespWithoutAuthAndNotify,
+  prepareAppBackground,
+  r,
+} from "~/utils"
 import { MustUser, UserOrGuest } from "./MustUser"
 import "./index.css"
 import { globalStyles } from "./theme"
@@ -62,7 +68,9 @@ const App: Component = () => {
   const t = useT()
   globalStyles()
   const isRouting = useIsRouting()
+  const { colorMode } = useColorMode()
   const { to, pathname } = useRouter()
+  let enableBackgroundSwitching = false
   const onTo = (path: string) => {
     to(path)
   }
@@ -92,12 +100,22 @@ const App: Component = () => {
           (e) => setErr(err().concat(e)),
         )
       })(),
+      prepareAppBackground(colorMode() === "dark" ? "dark" : "light"),
     ]),
   )
   onMount(async () => {
-    if (initialized) return
+    if (initialized) {
+      enableBackgroundSwitching = true
+      return
+    }
     initialized = true
     await data()
+    enableBackgroundSwitching = true
+  })
+  createEffect(() => {
+    const mode = colorMode() === "dark" ? "dark" : "light"
+    if (!enableBackgroundSwitching) return
+    void prepareAppBackground(mode)
   })
   return (
     <>

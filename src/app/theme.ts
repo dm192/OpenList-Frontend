@@ -169,6 +169,14 @@ export const globalStyles = globalCss({
     background: "#f3f7fb",
   },
   body: {
+    "--openlist-bg-image": "none",
+    "--openlist-surface": "rgba(255, 255, 255, 0.78)",
+    "--openlist-surface-strong": "rgba(255, 255, 255, 0.86)",
+    "--openlist-surface-soft": "rgba(255, 255, 255, 0.62)",
+    "--openlist-surface-border": "rgba(255, 255, 255, 0.38)",
+    "--openlist-surface-shadow": "0 16px 42px rgba(15, 23, 42, 0.12)",
+    "--openlist-overlay":
+      "linear-gradient(135deg, rgba(248, 250, 252, 0.56), rgba(241, 245, 249, 0.36) 48%, rgba(236, 253, 245, 0.42))",
     minHeight: "100vh",
     background:
       "linear-gradient(135deg, rgba(243, 247, 251, 0.98), rgba(248, 250, 252, 0.99) 48%, rgba(241, 248, 246, 0.97))",
@@ -179,22 +187,22 @@ export const globalStyles = globalCss({
       content: "",
       position: "fixed",
       inset: 0,
-      zIndex: -1,
+      zIndex: 0,
       pointerEvents: "none",
       background:
-        "radial-gradient(circle at 14% 12%, rgba(74, 144, 226, 0.13), transparent 30%), radial-gradient(circle at 84% 8%, rgba(20, 184, 166, 0.09), transparent 27%), radial-gradient(circle at 52% 88%, rgba(132, 204, 22, 0.06), transparent 28%), linear-gradient(rgba(79, 70, 229, 0.023) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 118, 110, 0.02) 1px, transparent 1px)",
-      backgroundPosition: "0% 0%, 100% 0%, 50% 100%, 0 0, 0 0",
-      backgroundSize: "120% 120%, 120% 120%, 130% 130%, 64px 64px, 64px 64px",
-      maskImage:
-        "linear-gradient(to bottom, rgba(0,0,0,0.82), rgba(0,0,0,0.24) 76%, transparent)",
-      animation: "openlist-flow-bg 28s ease-in-out infinite alternate",
+        "var(--openlist-overlay), radial-gradient(circle at 14% 12%, rgba(74, 144, 226, 0.13), transparent 30%), radial-gradient(circle at 84% 8%, rgba(20, 184, 166, 0.09), transparent 27%), radial-gradient(circle at 52% 88%, rgba(132, 204, 22, 0.06), transparent 28%), var(--openlist-bg-image)",
+      backgroundPosition: "center, 0% 0%, 100% 0%, 50% 100%, center center",
+      backgroundSize: "auto, 120% 120%, 120% 120%, 130% 130%, cover",
+      backgroundRepeat: "no-repeat",
+      opacity: 0.98,
+      animation: "openlist-flow-bg 32s ease-in-out infinite alternate",
       willChange: "background-position, transform",
     },
     "&::after": {
       content: "",
       position: "fixed",
       inset: "-12%",
-      zIndex: -1,
+      zIndex: 0,
       pointerEvents: "none",
       background:
         "linear-gradient(115deg, transparent 18%, rgba(59, 130, 246, 0.045) 36%, rgba(20, 184, 166, 0.04) 56%, transparent 76%)",
@@ -211,9 +219,17 @@ export const globalStyles = globalCss({
     isolation: "isolate",
     minHeight: "100vh",
     position: "relative",
+    zIndex: 1,
     width: "100%",
   },
   ".hope-ui-dark body, body.hope-ui-dark": {
+    "--openlist-surface": "rgba(15, 23, 42, 0.72)",
+    "--openlist-surface-strong": "rgba(15, 23, 42, 0.84)",
+    "--openlist-surface-soft": "rgba(15, 23, 42, 0.58)",
+    "--openlist-surface-border": "rgba(148, 163, 184, 0.18)",
+    "--openlist-surface-shadow": "0 18px 46px rgba(0, 0, 0, 0.28)",
+    "--openlist-overlay":
+      "linear-gradient(135deg, rgba(2, 6, 23, 0.62), rgba(15, 23, 42, 0.42) 52%, rgba(8, 47, 73, 0.5))",
     background:
       "linear-gradient(135deg, rgba(9, 14, 24, 0.99), rgba(15, 23, 42, 0.99) 52%, rgba(11, 27, 40, 0.97))",
     "&::before": {
@@ -229,24 +245,24 @@ export const globalStyles = globalCss({
   },
   ".header": {
     borderBottom: "1px solid rgba(148, 163, 184, 0.18)",
-    backgroundColor: "rgba(255, 255, 255, 0.82) !important",
+    backgroundColor: "var(--openlist-surface-strong) !important",
     backdropFilter: "saturate(130%) blur(12px)",
     boxShadow: "0 8px 22px rgba(15, 23, 42, 0.035)",
   },
   ".hope-ui-dark .header": {
-    backgroundColor: "rgba(15, 23, 42, 0.84) !important",
+    backgroundColor: "var(--openlist-surface-strong) !important",
     borderBottomColor: "rgba(148, 163, 184, 0.16)",
     boxShadow: "0 10px 28px rgba(0, 0, 0, 0.16)",
   },
   ".nav": {
     borderRadius: "$lg",
-    background: "rgba(255, 255, 255, 0.66) !important",
+    background: "var(--openlist-surface-soft) !important",
     backdropFilter: "blur(10px)",
     border: "1px solid rgba(148, 163, 184, 0.18)",
     padding: "$1 $2",
   },
   ".hope-ui-dark .nav": {
-    background: "rgba(15, 23, 42, 0.52) !important",
+    background: "var(--openlist-surface-soft) !important",
     borderColor: "rgba(148, 163, 184, 0.14)",
   },
   ".login-shell": {
@@ -260,10 +276,11 @@ export const globalStyles = globalCss({
     opacity: 0.24,
   },
   ".login-card, .obj-box, .readme-card": {
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    backdropFilter: "saturate(125%) blur(14px)",
+    backgroundColor: "var(--openlist-surface) !important",
+    border: "1px solid var(--openlist-surface-border)",
+    backdropFilter: "saturate(135%) blur(18px)",
     boxShadow:
-      "0 12px 32px rgba(15, 23, 42, 0.055), 0 1px 0 rgba(255, 255, 255, 0.36) inset",
+      "var(--openlist-surface-shadow), 0 1px 0 rgba(255, 255, 255, 0.22) inset",
   },
   ".login-card": {
     maxWidth: "calc(100vw - 32px)",
@@ -280,8 +297,25 @@ export const globalStyles = globalCss({
     {
       borderColor: "rgba(148, 163, 184, 0.14)",
       boxShadow:
-        "0 14px 36px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.045) inset",
+        "var(--openlist-surface-shadow), 0 1px 0 rgba(255, 255, 255, 0.045) inset",
     },
+  ".hope-modal__content, .hope-drawer__content, .hope-menu__content, .hope-popover__content, .hope-select__content, .hope-notification, .left-toolbar, .center-toolbar-surface, .error-card, .manage-shell, .manage-sidebar, .manage-header":
+    {
+      backgroundColor: "var(--openlist-surface-strong) !important",
+      border: "1px solid var(--openlist-surface-border)",
+      backdropFilter: "saturate(135%) blur(18px)",
+      boxShadow: "var(--openlist-surface-shadow)",
+    },
+  ".manage-shell": {
+    minHeight: "100vh",
+  },
+  ".manage-content": {
+    backgroundColor: "rgba(255, 255, 255, 0.18)",
+    backdropFilter: "blur(2px)",
+  },
+  ".hope-ui-dark .manage-content": {
+    backgroundColor: "rgba(15, 23, 42, 0.18)",
+  },
   ".list .title": {
     borderRadius: "$lg",
     background: "rgba(148, 163, 184, 0.065)",

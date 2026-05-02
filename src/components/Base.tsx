@@ -36,6 +36,7 @@ export const Error = (props: {
   return (
     <Center h={merged.h} p="$2" flexDirection="column">
       <Box
+        class="error-card"
         rounded="$lg"
         px="$4"
         py="$6"

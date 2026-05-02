@@ -190,29 +190,29 @@
 @keyframes openlist-flow-bg {
   0% {
     background-position:
+      center,
       0% 0%,
       100% 0%,
       50% 100%,
-      0 0,
-      0 0;
+      center center;
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
     background-position:
+      center,
       10% 6%,
       88% 12%,
       48% 88%,
-      18px 10px,
-      -14px 18px;
+      center center;
     transform: translate3d(0, -0.8%, 0) scale(1.015);
   }
   100% {
     background-position:
+      center,
       18% 10%,
       80% 18%,
       58% 82%,
-      32px 20px,
-      -28px 36px;
+      center center;
     transform: translate3d(-0.6%, 0.8%, 0) scale(1.025);
   }
 }

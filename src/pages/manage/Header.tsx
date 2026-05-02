@@ -39,6 +39,7 @@ const Header = () => {
   }
   return (
     <Box
+      class="manage-header"
       as="header"
       position="sticky"
       top="0"

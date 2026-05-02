@@ -44,6 +44,7 @@ export const Center = () => {
             transition={{ duration: 0.2 }}
           >
             <HStack
+              class="center-toolbar-surface"
               p="$2"
               bgColor={useColorModeValue("white", "#000000d0")()}
               spacing="$1"

@@ -13,8 +13,9 @@ const Manage = () => {
   useTitle(() => t("manage.title"))
   return (
     <Box
+      class="manage-shell"
       css={{
-        "--hope-colors-background": "var(--hope-colors-loContrast)",
+        "--hope-colors-background": "transparent",
       }}
       bgColor="$background"
       w="$full"
@@ -22,6 +23,7 @@ const Manage = () => {
       <Header />
       <Flex w="$full" h="calc(100vh - 64px)">
         <Box
+          class="manage-sidebar"
           display={{ "@initial": "none", "@sm": "block" }}
           w="$56"
           h="$full"
@@ -38,6 +40,7 @@ const Manage = () => {
           </Center>
         </Box>
         <Box
+          class="manage-content"
           w={{
             "@initial": "$full",
             "@sm": "calc(100% - 14rem)",
