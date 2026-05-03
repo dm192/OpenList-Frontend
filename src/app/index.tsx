@@ -15,7 +15,7 @@ const Index = () => {
         }}
       >
         <NotificationsProvider duration={3000}>
-          <Suspense fallback={<FullScreenLoading />}>
+          <Suspense fallback={<FullScreenLoading message="Loading page ..." />}>
             <App />
           </Suspense>
         </NotificationsProvider>

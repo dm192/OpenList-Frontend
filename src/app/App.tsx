@@ -84,25 +84,29 @@ const App: Component = () => {
   })
 
   const [err, setErr] = createSignal<string[]>([])
-  const [loading, data] = useLoading(() =>
-    Promise.all([
-      (async () => {
-        handleRespWithoutAuthAndNotify(
-          (await r.get("/public/settings")) as Resp<Record<string, string>>,
-          setSettings,
-          (e) => setErr(err().concat(e)),
-        )
-      })(),
-      (async () => {
-        handleRespWithoutAuthAndNotify(
-          (await r.get("/public/archive_extensions")) as Resp<string[]>,
-          setArchiveExtensions,
-          (e) => setErr(err().concat(e)),
-        )
-      })(),
-      prepareAppBackground(colorMode() === "dark" ? "dark" : "light"),
-    ]),
+  const [loadingMessage, setLoadingMessage] = createSignal(
+    "Getting things ready ...",
   )
+  const [loading, data] = useLoading(async () => {
+    setLoadingMessage("Loading settings ...")
+    handleRespWithoutAuthAndNotify(
+      (await r.get("/public/settings")) as Resp<Record<string, string>>,
+      setSettings,
+      (e) => setErr(err().concat(e)),
+    )
+    setLoadingMessage("Loading archive support ...")
+    handleRespWithoutAuthAndNotify(
+      (await r.get("/public/archive_extensions")) as Resp<string[]>,
+      setArchiveExtensions,
+      (e) => setErr(err().concat(e)),
+    )
+    setLoadingMessage("Preparing background ...")
+    await prepareAppBackground(
+      colorMode() === "dark" ? "dark" : "light",
+      setLoadingMessage,
+    )
+    setLoadingMessage("Starting OpenList ...")
+  })
   onMount(async () => {
     if (initialized) {
       enableBackgroundSwitching = true
@@ -146,7 +150,7 @@ const App: Component = () => {
           />
         </Match>
         <Match when={loading()}>
-          <FullScreenLoading />
+          <FullScreenLoading message={loadingMessage()} />
         </Match>
       </Switch>
     </>

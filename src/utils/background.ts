@@ -73,14 +73,20 @@ const loadBackgroundImage = async (mode: BackgroundMode) => {
 
 export const getBackgroundStatus = () => status
 
-export const prepareAppBackground = async (mode: BackgroundMode) => {
+export const prepareAppBackground = async (
+  mode: BackgroundMode,
+  onStep?: (message: string) => void,
+) => {
   setBackgroundStatus("loading")
   try {
+    onStep?.("Checking background service ...")
     if (!(await checkHealth())) {
       setBackgroundStatus("fallback")
       return false
     }
+    onStep?.("Loading background image ...")
     const imageUrl = await loadBackgroundImage(mode)
+    onStep?.("Applying background ...")
     document.body.style.setProperty("--openlist-bg-image", `url("${imageUrl}")`)
     document.body.dataset.backgroundMode = mode
     setBackgroundStatus("ready")

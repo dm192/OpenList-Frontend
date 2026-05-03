@@ -152,89 +152,70 @@
   filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.1));
 }
 
-.fullscreen-loading__hint {
-  min-height: 20px;
+.loading-status-window {
+  position: relative;
+  width: min(320px, calc(100vw - 48px));
+  height: 22px;
+  overflow: hidden;
+}
+
+.loading-status-track {
+  display: flex;
+  height: 44px;
+  flex-direction: column;
+  transform: translateY(0);
+  transition: transform 240ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+}
+
+.loading-status-track.is-sliding {
+  transform: translateY(-22px);
+}
+
+.loading-status-text {
+  display: flex;
+  height: 22px;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
   color: rgba(71, 85, 105, 0.86);
   font-size: 13px;
   letter-spacing: 0;
-  animation: loading-hint-in 160ms ease-out both;
+  text-align: center;
 }
 
-.hope-ui-dark .fullscreen-loading__hint {
+.hope-ui-dark .loading-status-text {
   color: rgba(203, 213, 225, 0.78);
 }
 
 .azure-spinner {
-  --azure-spinner-size: 64px;
+  --azure-spinner-size: 44px;
   --azure-spinner-color: #1890ff;
-  --azure-spinner-track: color-mix(
-    in srgb,
-    var(--azure-spinner-color),
-    transparent 84%
-  );
   position: relative;
-  display: inline-block;
+  display: inline-flex;
   width: var(--azure-spinner-size);
   height: var(--azure-spinner-size);
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
   color: var(--azure-spinner-color);
-  animation: azure-spinner-rotate 1.05s linear infinite;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  transform-origin: 50% 50%;
-  will-change: transform;
 }
 
-.azure-spinner__svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+.fluent-spinner-mount,
+.fluent-spinner-mount > div,
+.fluent-spinner-provider {
+  display: inline-flex;
+  width: var(--azure-spinner-size);
+  height: var(--azure-spinner-size);
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
 }
 
-.azure-spinner__track,
-.azure-spinner__arc {
-  fill: none;
-  stroke-width: 4;
-  vector-effect: non-scaling-stroke;
-}
-
-.azure-spinner__track {
-  stroke: var(--azure-spinner-track);
-  opacity: 0.58;
-}
-
-.azure-spinner__arc {
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-dasharray: 58 126;
-  stroke-dashoffset: 0;
-  transform-origin: 50% 50%;
-  animation: azure-spinner-arc 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  will-change: stroke-dashoffset, opacity;
-}
-
-@keyframes azure-spinner-rotate {
-  0% {
-    transform: translateZ(0) rotate(0deg);
-  }
-  100% {
-    transform: translateZ(0) rotate(360deg);
-  }
-}
-
-@keyframes azure-spinner-arc {
-  0% {
-    stroke-dashoffset: 0;
-    opacity: 0.82;
-  }
-  45% {
-    stroke-dashoffset: -54;
-    opacity: 1;
-  }
-  100% {
-    stroke-dashoffset: -126;
-    opacity: 0.82;
-  }
+.fluent-loading-spinner {
+  min-width: var(--azure-spinner-size);
+  min-height: var(--azure-spinner-size);
+  color: var(--azure-spinner-color);
 }
 
 @keyframes fullscreen-loading-in {
@@ -256,17 +237,6 @@
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes loading-hint-in {
-  from {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -321,20 +291,16 @@
 @media (prefers-reduced-motion: reduce) {
   .fullscreen-loading,
   .loading-logo,
-  .fullscreen-loading__hint,
-  .azure-spinner,
-  .azure-spinner__arc {
+  .loading-status-track,
+  .azure-spinner {
     animation-duration: 1ms;
     animation-iteration-count: 1;
+    transition-duration: 1ms;
   }
 
-  .azure-spinner {
+  .loading-status-track,
+  .loading-status-track.is-sliding {
     transform: none;
-  }
-
-  .azure-spinner__arc {
-    stroke-dasharray: 36 126;
-    stroke-dashoffset: -18;
   }
 
   .scoped-loading-overlay {

@@ -16,7 +16,7 @@ const MustUser = (props: { children: JSXElement }) => {
   return (
     <Switch fallback={props.children}>
       <Match when={loading()}>
-        <FullScreenLoading />
+        <FullScreenLoading message="Checking session ..." />
       </Match>
       <Match when={err() !== undefined}>
         <Error msg={t("home.get_current_user_failed") + err()} />
@@ -48,7 +48,7 @@ const UserOrGuest = (props: { children: JSXElement }) => {
   return (
     <Switch fallback={props.children}>
       <Match when={!skipLogin() && loading()}>
-        <FullScreenLoading />
+        <FullScreenLoading message="Preparing guest access ..." />
       </Match>
     </Switch>
   )

@@ -1,21 +1,32 @@
-import { Center, Image, Text, VStack, useColorModeValue } from "@hope-ui/solid"
 import {
+  Box,
+  Center,
+  Image,
+  Text,
+  VStack,
+  useColorMode,
+  useColorModeValue,
+} from "@hope-ui/solid"
+import { createElement } from "react"
+import {
+  createEffect,
   createSignal,
   JSXElement,
   mergeProps,
   onCleanup,
-  onMount,
   Show,
 } from "solid-js"
 import { getMainColor } from "~/store"
 import { getConfiguredLogos } from "~/utils"
+import { ReactMount } from "./ReactMount"
+import { FluentLoadingSpinner } from "./react/FluentLoadingSpinner"
 
 const spinnerSizes: Record<string, string> = {
-  xs: "20px",
-  sm: "26px",
-  md: "34px",
-  lg: "46px",
-  xl: "64px",
+  xs: "16px",
+  sm: "20px",
+  md: "28px",
+  lg: "36px",
+  xl: "44px",
 }
 
 const resolveSpinnerSize = (size?: string) => {
@@ -44,6 +55,7 @@ export const AzureLoadingSpinner = (props: {
   class?: string
 }) => {
   const color = () => props.color || getMainColor()
+  const { colorMode } = useColorMode()
 
   return (
     <span
@@ -53,36 +65,113 @@ export const AzureLoadingSpinner = (props: {
       }}
       style={
         {
-          "--azure-spinner-size": resolveSpinnerSize(props.size),
           "--azure-spinner-color": color(),
+          "--azure-spinner-size": resolveSpinnerSize(props.size),
         } as any
       }
       aria-hidden="true"
     >
-      <svg class="azure-spinner__svg" viewBox="0 0 48 48">
-        <circle class="azure-spinner__track" cx="24" cy="24" r="20" />
-        <circle class="azure-spinner__arc" cx="24" cy="24" r="20" />
-      </svg>
+      <ReactMount
+        class="fluent-spinner-mount"
+        children={createElement(FluentLoadingSpinner, {
+          size: props.size,
+          color: color(),
+          dark: colorMode() === "dark",
+        })}
+      />
     </span>
   )
 }
 
-export const FullScreenLoading = () => {
-  const [showHint, setShowHint] = createSignal(false)
+const DEFAULT_LOADING_MESSAGE = "Getting things ready ..."
+const MIN_MESSAGE_DURATION = 420
+const MESSAGE_ANIMATION_DURATION = 240
 
-  onMount(() => {
-    const timer = window.setTimeout(() => setShowHint(true), 3000)
-    onCleanup(() => window.clearTimeout(timer))
+export const LoadingStatusText = (props: { message?: string }) => {
+  const initial = props.message || DEFAULT_LOADING_MESSAGE
+  const [current, setCurrent] = createSignal(initial)
+  const [incoming, setIncoming] = createSignal<string>()
+  const [sliding, setSliding] = createSignal(false)
+  const queue: string[] = []
+  let shownAt = performance.now()
+  let active = current()
+  let timer: number | undefined
+
+  const clearTimer = () => {
+    if (timer === undefined) return
+    window.clearTimeout(timer)
+    timer = undefined
+  }
+
+  const animateNext = () => {
+    if (sliding() || queue.length === 0) return
+
+    const elapsed = performance.now() - shownAt
+    if (elapsed < MIN_MESSAGE_DURATION) {
+      clearTimer()
+      timer = window.setTimeout(
+        animateNext,
+        Math.max(0, MIN_MESSAGE_DURATION - elapsed),
+      )
+      return
+    }
+
+    const next = queue.shift()
+    if (!next || next === active) {
+      animateNext()
+      return
+    }
+
+    setIncoming(next)
+    setSliding(true)
+    clearTimer()
+    timer = window.setTimeout(() => {
+      active = next
+      setCurrent(next)
+      setIncoming(undefined)
+      setSliding(false)
+      shownAt = performance.now()
+      timer = undefined
+      animateNext()
+    }, MESSAGE_ANIMATION_DURATION)
+  }
+
+  createEffect(() => {
+    const next = props.message || DEFAULT_LOADING_MESSAGE
+    const lastQueued = queue[queue.length - 1]
+    const pending = incoming()
+    if (next === active || next === pending || next === lastQueued) return
+    queue.push(next)
+    animateNext()
   })
 
+  onCleanup(() => {
+    clearTimer()
+    queue.length = 0
+  })
+
+  return (
+    <Box class="loading-status-window" aria-live="polite">
+      <Box
+        classList={{
+          "loading-status-track": true,
+          "is-sliding": sliding(),
+        }}
+      >
+        <Text class="loading-status-text">{current()}</Text>
+        <Text class="loading-status-text">{incoming() || current()}</Text>
+      </Box>
+    </Box>
+  )
+}
+
+export const FullScreenLoading = (props: { message?: string } = {}) => {
   return (
     <Center class="fullscreen-loading" minH="100vh" w="$full">
       <VStack class="fullscreen-loading__content" spacing="$3">
         <LoadingLogo size="58px" />
         <AzureLoadingSpinner size="xl" />
-        <Show when={showHint()}>
-          <Text class="fullscreen-loading__hint">Getting things ready ...</Text>
-        </Show>
+        <LoadingStatusText message={props.message} />
       </VStack>
     </Center>
   )
