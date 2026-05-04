@@ -169,7 +169,7 @@ export const globalStyles = globalCss({
     padding: 0,
   },
   html: {
-    fontFamily: `-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important`,
+    fontFamily: `"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important`,
     background: "#f3f7fb",
   },
   body: {
@@ -185,6 +185,9 @@ export const globalStyles = globalCss({
     background:
       "linear-gradient(135deg, rgba(243, 247, 251, 0.98), rgba(248, 250, 252, 0.99) 48%, rgba(241, 248, 246, 0.97))",
     color: "$neutral12",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+    textRendering: "optimizeLegibility",
     overflowX: "hidden",
     position: "relative",
     "&::before": {

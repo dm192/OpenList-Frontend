@@ -10,15 +10,11 @@ import {
   Suspense,
   Switch,
 } from "solid-js"
-import {
-  AzureLoadingSpinner,
-  Error,
-  FullLoading,
-  LinkWithBase,
-} from "~/components"
+import { Error, LinkWithBase } from "~/components"
 import { useObjTitle, usePath, useRouter, useT } from "~/hooks"
 import {
   getPagination,
+  layout,
   objStore,
   password,
   recordHistory,
@@ -31,19 +27,17 @@ import { UserMethods } from "~/types"
 const Folder = lazy(() => import("./folder/Folder"))
 const File = lazy(() => import("./file/File"))
 const Password = lazy(() => import("./Password"))
-// const ListSkeleton = lazy(() => import("./Folder/ListSkeleton"));
-// const GridSkeleton = lazy(() => import("./Folder/GridSkeleton"));
+const ListSkeleton = lazy(() => import("./folder/ListSkeleton"))
+const GridSkeleton = lazy(() => import("./folder/GridSkeleton"))
 
 const [objBoxRef, setObjBoxRef] = createSignal<HTMLDivElement>()
 export { objBoxRef }
 
-const ScopedLoadingOverlay = () => {
+const FolderSkeleton = () => {
   return (
-    <Box class="scoped-loading-overlay">
-      <Box class="scoped-loading-overlay__indicator">
-        <AzureLoadingSpinner size="md" />
-      </Box>
-    </Box>
+    <Show when={layout() === "list"} fallback={<GridSkeleton />}>
+      <ListSkeleton />
+    </Show>
   )
 }
 
@@ -85,18 +79,6 @@ export const Obj = () => {
   const shouldShowStorageButton = createMemo(() => {
     return isStorageError() && UserMethods.is_admin(me())
   })
-  const isFetchingObject = createMemo(() =>
-    [State.FetchingObj, State.FetchingObjs].includes(objStore.state),
-  )
-  const hasRetainedContent = createMemo(
-    () =>
-      objStore.objs.length > 0 ||
-      !!objStore.raw_url ||
-      objStore.state === State.File ||
-      objStore.state === State.Folder ||
-      objStore.state === State.FetchingMore,
-  )
-
   const storageErrorActions = () => (
     <Button colorScheme="accent" onClick={() => to("/@manage/storages")}>
       {t("global.go_to_storages")}
@@ -116,7 +98,7 @@ export const Obj = () => {
       overflow="hidden"
     >
       <Box class="obj-scroll-region" w="$full" h="$full">
-        <Suspense fallback={<FullLoading />}>
+        <Suspense fallback={<FolderSkeleton />}>
           <Switch>
             <Match when={objStore.err}>
               <Error
@@ -132,14 +114,7 @@ export const Obj = () => {
                 objStore.state,
               )}
             >
-              <Show when={hasRetainedContent()} fallback={<FullLoading />}>
-                <Show when={objStore.objs.length > 0} fallback={<File />}>
-                  <Folder />
-                </Show>
-              </Show>
-              {/* <Show when={layout() === "list"} fallback={<GridSkeleton />}>
-              <ListSkeleton />
-            </Show> */}
+              <FolderSkeleton />
             </Match>
             <Match when={objStore.state === State.NeedPassword}>
               <Password
@@ -177,9 +152,6 @@ export const Obj = () => {
           </Switch>
         </Suspense>
       </Box>
-      <Show when={isFetchingObject() && hasRetainedContent()}>
-        <ScopedLoadingOverlay />
-      </Show>
     </VStack>
   )
 }

@@ -6,7 +6,6 @@ import {
   MenuItem,
   MenuTrigger,
   MenuTriggerProps,
-  Spinner,
   useColorModeValue,
 } from "@hope-ui/solid"
 import { createSignal, For, onMount, Show } from "solid-js"
@@ -14,6 +13,7 @@ import { initialLang, Lang, languages, setCurrentLang } from "~/app/i18n"
 // import { TbLanguageHiragana } from "solid-icons/tb";
 import { IoLanguageOutline } from "solid-icons/io"
 import { Portal } from "solid-js/web"
+import { AzureLoadingSpinner } from "./FullLoading"
 
 const [fetchingLang, setFetchingLang] = createSignal(false)
 
@@ -59,13 +59,7 @@ export const SwitchLanguage = <C extends ElementType = "button">(
             bg={useColorModeValue("$blackAlpha4", "$whiteAlpha4")()}
             zIndex="9000"
           >
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="$neutral4"
-              color="$info10"
-              size="xl"
-            />
+            <AzureLoadingSpinner size="xl" />
           </Center>
         </Portal>
       </Show>

@@ -22,6 +22,9 @@ importers:
       '@fluentui/react-components':
         specifier: ^9.73.8
         version: 9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(scheduler@0.27.0)
+      '@fontsource/noto-sans-sc':
+        specifier: ^5.2.9
+        version: 5.2.9
       '@github/webauthn-json':
         specifier: ^2.1.1
         version: 2.1.1
@@ -1734,6 +1737,9 @@ packages:
 
   '@fluentui/tokens@1.0.0-alpha.23':
     resolution: {integrity: sha512-uxrzF9Z+J10naP0pGS7zPmzSkspSS+3OJDmYIK3o1nkntQrgBXq3dBob4xSlTDm5aOQ0kw6EvB9wQgtlyy4eKQ==}
+
+  '@fontsource/noto-sans-sc@5.2.9':
+    resolution: {integrity: sha512-bTUIWGBgJDpwi5qAr+x0/lcgv80IHTB9vl6s2f6EymZEa7qYV99yNRBZuKFT+SYDKVunZrjCEhWtpxqmbXWl5Q==}
 
   '@github/webauthn-json@2.1.1':
     resolution: {integrity: sha512-XrftRn4z75SnaJOmZQbt7Mk+IIjqVHw+glDGOxuHwXkZBZh/MBoRS7MHjSZMDaLhT4RjN2VqiEU7EOYleuJWSQ==}
@@ -6654,6 +6660,8 @@ snapshots:
   '@fluentui/tokens@1.0.0-alpha.23':
     dependencies:
       '@swc/helpers': 0.5.21
+
+  '@fontsource/noto-sans-sc@5.2.9': {}
 
   '@github/webauthn-json@2.1.1': {}
 

@@ -160,19 +160,13 @@
 }
 
 .loading-status-track {
-  display: flex;
-  height: 44px;
-  flex-direction: column;
-  transform: translateY(0);
-  transition: transform 240ms cubic-bezier(0.2, 0, 0, 1);
-  will-change: transform;
-}
-
-.loading-status-track.is-sliding {
-  transform: translateY(-22px);
+  position: relative;
+  height: 22px;
 }
 
 .loading-status-text {
+  position: absolute;
+  inset: 0;
   display: flex;
   height: 22px;
   min-height: 22px;
@@ -180,17 +174,47 @@
   justify-content: center;
   color: rgba(71, 85, 105, 0.86);
   font-size: 13px;
+  font-weight: 500;
   letter-spacing: 0;
+  opacity: 1;
   text-align: center;
+  transform: translateY(0);
+  transition:
+    transform 240ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 200ms ease-out;
+  will-change: transform, opacity;
+}
+
+.loading-status-text--outgoing {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.loading-status-text--incoming {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.loading-status-window.is-switching .loading-status-text--outgoing {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.loading-status-window.is-switching .loading-status-text--incoming {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hope-ui-dark .loading-status-text {
   color: rgba(203, 213, 225, 0.78);
 }
 
+.openlist-spinner,
 .azure-spinner {
   --azure-spinner-size: 44px;
   --azure-spinner-color: #1890ff;
+  --openlist-spinner-offset: 0;
+  --openlist-spinner-circumference: 113.097;
   position: relative;
   display: inline-flex;
   width: var(--azure-spinner-size);
@@ -199,23 +223,62 @@
   align-items: center;
   justify-content: center;
   color: var(--azure-spinner-color);
+  filter: drop-shadow(0 8px 18px rgba(24, 144, 255, 0.14));
 }
 
-.fluent-spinner-mount,
-.fluent-spinner-mount > div,
-.fluent-spinner-provider {
-  display: inline-flex;
-  width: var(--azure-spinner-size);
-  height: var(--azure-spinner-size);
-  align-items: center;
-  justify-content: center;
-  background: transparent !important;
+.openlist-spinner__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
 }
 
-.fluent-loading-spinner {
-  min-width: var(--azure-spinner-size);
-  min-height: var(--azure-spinner-size);
-  color: var(--azure-spinner-color);
+.openlist-spinner__track,
+.openlist-spinner__bar {
+  fill: none;
+  stroke-width: 4;
+}
+
+.openlist-spinner__track {
+  stroke: color-mix(in srgb, var(--azure-spinner-color), transparent 82%);
+}
+
+.openlist-spinner__bar {
+  stroke: var(--azure-spinner-color);
+  stroke-dasharray: var(--openlist-spinner-circumference);
+  stroke-dashoffset: var(--openlist-spinner-offset);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.openlist-spinner.is-indeterminate .openlist-spinner__svg {
+  animation: openlist-spinner-rotate 980ms linear infinite;
+}
+
+.openlist-spinner.is-indeterminate .openlist-spinner__bar {
+  stroke-dasharray: 74 113.097;
+  stroke-dashoffset: 20;
+}
+
+.hope-spinner {
+  color: var(--hope-colors-info10) !important;
+  border-width: 4px !important;
+  border-color: currentColor !important;
+  border-bottom-color: color-mix(
+    in srgb,
+    currentColor,
+    transparent 82%
+  ) !important;
+  border-left-color: color-mix(
+    in srgb,
+    currentColor,
+    transparent 82%
+  ) !important;
+  animation-duration: 980ms !important;
+}
+
+.hope-button__loader svg {
+  color: currentColor;
+  animation-duration: 980ms !important;
 }
 
 @keyframes fullscreen-loading-in {
@@ -226,6 +289,12 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes openlist-spinner-rotate {
+  to {
+    transform: rotate(270deg);
   }
 }
 
@@ -292,19 +361,20 @@
   .fullscreen-loading,
   .loading-logo,
   .loading-status-track,
-  .azure-spinner {
+  .loading-status-text,
+  .azure-spinner,
+  .openlist-spinner.is-indeterminate .openlist-spinner__svg,
+  .openlist-spinner__bar,
+  .hope-spinner,
+  .hope-button__loader svg {
     animation-duration: 1ms;
     animation-iteration-count: 1;
     transition-duration: 1ms;
   }
 
-  .loading-status-track,
-  .loading-status-track.is-sliding {
+  .loading-status-text,
+  .loading-status-window.is-switching .loading-status-text {
     transform: none;
-  }
-
-  .scoped-loading-overlay {
-    transition: none;
   }
 
   body::before,
@@ -336,46 +406,10 @@
     forwards;
 }
 
-.scoped-loading-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: inherit;
-  background: rgba(248, 250, 252, 0.58);
-  backdrop-filter: blur(2px);
-  animation: scoped-loading-in 140ms ease-out both;
-  pointer-events: none;
-}
-
-.scoped-loading-overlay__indicator {
-  position: fixed;
-  top: 50vh;
-  left: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  transform: translate(-50%, -50%);
-}
-
-.hope-ui-dark .scoped-loading-overlay {
-  background: rgba(15, 23, 42, 0.5);
-}
-
 .toolbar-loading-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: var(--hope-sizes-8);
   height: var(--hope-sizes-8);
-}
-
-@keyframes scoped-loading-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }

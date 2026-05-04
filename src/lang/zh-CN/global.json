@@ -31,5 +31,7 @@
   "invalid_filename_chars": "文件名不能包含: / \\ ? < > * : | \"",
   "invalid_regex": "正则表达式无效",
   "name": "名称",
-  "go_to_storages": "转到存储"
+  "go_to_storages": "转到存储",
+  "background_load_failed_title": "背景图加载失败",
+  "background_load_failed_desc": "背景图请求重试后仍未成功，OpenList 已回退到默认背景。"
 }

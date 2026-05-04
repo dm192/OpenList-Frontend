@@ -4,12 +4,11 @@ import {
   Image,
   Text,
   VStack,
-  useColorMode,
   useColorModeValue,
 } from "@hope-ui/solid"
-import { createElement } from "react"
 import {
   createEffect,
+  createMemo,
   createSignal,
   JSXElement,
   mergeProps,
@@ -18,8 +17,6 @@ import {
 } from "solid-js"
 import { getMainColor } from "~/store"
 import { getConfiguredLogos } from "~/utils"
-import { ReactMount } from "./ReactMount"
-import { FluentLoadingSpinner } from "./react/FluentLoadingSpinner"
 
 const spinnerSizes: Record<string, string> = {
   xs: "16px",
@@ -53,32 +50,46 @@ export const AzureLoadingSpinner = (props: {
   size?: string
   color?: string
   class?: string
+  progress?: number
 }) => {
   const color = () => props.color || getMainColor()
-  const { colorMode } = useColorMode()
+  const progress = createMemo(() => clampProgress(props.progress))
+  const radius = 18
+  const circumference = 2 * Math.PI * radius
+  const offset = createMemo(() => {
+    const value = progress()
+    if (value === undefined) return 0
+    return circumference * (1 - value / 100)
+  })
 
   return (
     <span
       classList={{
-        "azure-spinner": true,
+        "openlist-spinner": true,
+        "is-determinate": progress() !== undefined,
+        "is-indeterminate": progress() === undefined,
         [props.class || ""]: !!props.class,
       }}
       style={
         {
           "--azure-spinner-color": color(),
           "--azure-spinner-size": resolveSpinnerSize(props.size),
+          "--openlist-spinner-offset": offset(),
+          "--openlist-spinner-circumference": circumference,
         } as any
       }
-      aria-hidden="true"
+      role={progress() === undefined ? undefined : "progressbar"}
+      aria-hidden={progress() === undefined ? "true" : undefined}
+      aria-valuemin={progress() === undefined ? undefined : "0"}
+      aria-valuemax={progress() === undefined ? undefined : "100"}
+      aria-valuenow={
+        progress() === undefined ? undefined : Math.round(progress()!)
+      }
     >
-      <ReactMount
-        class="fluent-spinner-mount"
-        children={createElement(FluentLoadingSpinner, {
-          size: props.size,
-          color: color(),
-          dark: colorMode() === "dark",
-        })}
-      />
+      <svg viewBox="0 0 44 44" class="openlist-spinner__svg">
+        <circle class="openlist-spinner__track" cx="22" cy="22" r={radius} />
+        <circle class="openlist-spinner__bar" cx="22" cy="22" r={radius} />
+      </svg>
     </span>
   )
 }
@@ -86,16 +97,25 @@ export const AzureLoadingSpinner = (props: {
 const DEFAULT_LOADING_MESSAGE = "Getting things ready ..."
 const MIN_MESSAGE_DURATION = 420
 const MESSAGE_ANIMATION_DURATION = 240
+const MESSAGE_CLEANUP_DELAY = MESSAGE_ANIMATION_DURATION + 40
+
+const clampProgress = (progress?: number) => {
+  if (progress === undefined || Number.isNaN(progress)) return undefined
+  return Math.min(100, Math.max(0, progress))
+}
 
 export const LoadingStatusText = (props: { message?: string }) => {
   const initial = props.message || DEFAULT_LOADING_MESSAGE
   const [current, setCurrent] = createSignal(initial)
+  const [outgoing, setOutgoing] = createSignal<string>()
   const [incoming, setIncoming] = createSignal<string>()
-  const [sliding, setSliding] = createSignal(false)
+  const [switching, setSwitching] = createSignal(false)
   const queue: string[] = []
   let shownAt = performance.now()
   let active = current()
   let timer: number | undefined
+  let enterFrame: number | undefined
+  let switchFrame: number | undefined
 
   const clearTimer = () => {
     if (timer === undefined) return
@@ -103,8 +123,19 @@ export const LoadingStatusText = (props: { message?: string }) => {
     timer = undefined
   }
 
+  const clearFrames = () => {
+    if (enterFrame !== undefined) {
+      window.cancelAnimationFrame(enterFrame)
+      enterFrame = undefined
+    }
+    if (switchFrame !== undefined) {
+      window.cancelAnimationFrame(switchFrame)
+      switchFrame = undefined
+    }
+  }
+
   const animateNext = () => {
-    if (sliding() || queue.length === 0) return
+    if (switching() || queue.length === 0) return
 
     const elapsed = performance.now() - shownAt
     if (elapsed < MIN_MESSAGE_DURATION) {
@@ -122,18 +153,27 @@ export const LoadingStatusText = (props: { message?: string }) => {
       return
     }
 
+    setOutgoing(active)
     setIncoming(next)
-    setSliding(true)
     clearTimer()
-    timer = window.setTimeout(() => {
-      active = next
-      setCurrent(next)
-      setIncoming(undefined)
-      setSliding(false)
-      shownAt = performance.now()
-      timer = undefined
-      animateNext()
-    }, MESSAGE_ANIMATION_DURATION)
+    clearFrames()
+    enterFrame = window.requestAnimationFrame(() => {
+      enterFrame = undefined
+      switchFrame = window.requestAnimationFrame(() => {
+        switchFrame = undefined
+        setSwitching(true)
+        timer = window.setTimeout(() => {
+          active = next
+          setCurrent(next)
+          setOutgoing(undefined)
+          setIncoming(undefined)
+          setSwitching(false)
+          shownAt = performance.now()
+          timer = undefined
+          animateNext()
+        }, MESSAGE_CLEANUP_DELAY)
+      })
+    })
   }
 
   createEffect(() => {
@@ -147,30 +187,47 @@ export const LoadingStatusText = (props: { message?: string }) => {
 
   onCleanup(() => {
     clearTimer()
+    clearFrames()
     queue.length = 0
   })
 
   return (
-    <Box class="loading-status-window" aria-live="polite">
-      <Box
-        classList={{
-          "loading-status-track": true,
-          "is-sliding": sliding(),
-        }}
-      >
-        <Text class="loading-status-text">{current()}</Text>
-        <Text class="loading-status-text">{incoming() || current()}</Text>
+    <Box
+      classList={{
+        "loading-status-window": true,
+        "is-switching": switching(),
+      }}
+      aria-live="polite"
+    >
+      <Box class="loading-status-track">
+        <Show
+          when={outgoing() && incoming()}
+          fallback={
+            <Text class="loading-status-text loading-status-text--current">
+              {current()}
+            </Text>
+          }
+        >
+          <Text class="loading-status-text loading-status-text--outgoing">
+            {outgoing()}
+          </Text>
+          <Text class="loading-status-text loading-status-text--incoming">
+            {incoming()}
+          </Text>
+        </Show>
       </Box>
     </Box>
   )
 }
 
-export const FullScreenLoading = (props: { message?: string } = {}) => {
+export const FullScreenLoading = (
+  props: { message?: string; progress?: number } = {},
+) => {
   return (
     <Center class="fullscreen-loading" minH="100vh" w="$full">
       <VStack class="fullscreen-loading__content" spacing="$3">
         <LoadingLogo size="58px" />
-        <AzureLoadingSpinner size="xl" />
+        <AzureLoadingSpinner progress={props.progress} size="xl" />
         <LoadingStatusText message={props.message} />
       </VStack>
     </Center>

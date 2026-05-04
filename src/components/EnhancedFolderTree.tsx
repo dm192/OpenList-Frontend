@@ -1,4 +1,4 @@
-import { Box, HStack, Icon, Spinner, Text, VStack } from "@hope-ui/solid"
+import { Box, HStack, Icon, Text, VStack } from "@hope-ui/solid"
 import { BiSolidRightArrow, BiSolidFolderOpen } from "solid-icons/bi"
 import { TbFile, TbFolder } from "solid-icons/tb"
 import {
@@ -15,6 +15,7 @@ import {
 import { useFetch, useT, useUtil } from "~/hooks"
 import { getMainColor, password } from "~/store"
 import { Obj } from "~/types"
+import { AzureLoadingSpinner } from "./FullLoading"
 import {
   pathBase,
   handleResp,
@@ -132,7 +133,7 @@ const EnhancedFolderTreeNode = (props: { path: string }) => {
         <HStack spacing="$2">
           <Show
             when={!loading()}
-            fallback={<Spinner size="sm" color={getMainColor()} />}
+            fallback={<AzureLoadingSpinner size="sm" color={getMainColor()} />}
           >
             <Show
               when={!emptyIconVisible()}

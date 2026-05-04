@@ -31,5 +31,7 @@
   "invalid_filename_chars": "Filename cannot contain: / \\ ? < > * : | \"",
   "invalid_regex": "Invalid regular expression",
   "name": "Name",
-  "go_to_storages": "Go to Storages"
+  "go_to_storages": "Go to Storages",
+  "background_load_failed_title": "Background image failed to load",
+  "background_load_failed_desc": "OpenList has fallen back to the default background after retrying the background image request."
 }

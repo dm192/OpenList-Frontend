@@ -12,7 +12,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spinner,
   Text,
   VStack,
 } from "@hope-ui/solid"
@@ -34,6 +33,7 @@ import {
 import { useFetch, useT, useUtil } from "~/hooks"
 import { getMainColor, password } from "~/store"
 import { Obj } from "~/types"
+import { AzureLoadingSpinner } from "./FullLoading"
 import {
   pathBase,
   handleResp,
@@ -163,7 +163,7 @@ const FolderTreeNode = (props: { path: string }) => {
         <HStack spacing="$2">
           <Show
             when={!loading()}
-            fallback={<Spinner size="sm" color={getMainColor()} />}
+            fallback={<AzureLoadingSpinner size="sm" color={getMainColor()} />}
           >
             <Show
               when={!emptyIconVisible()}
@@ -302,7 +302,7 @@ const FolderNameInput = (props: {
       />
       <Show
         when={!loading()}
-        fallback={<Spinner size="sm" color={getMainColor()} />}
+        fallback={<AzureLoadingSpinner size="sm" color={getMainColor()} />}
       >
         <Button
           aria-label={t("global.ok")}

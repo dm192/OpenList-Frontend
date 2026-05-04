@@ -1,4 +1,20 @@
-import { Progress, ProgressIndicator, useColorMode } from "@hope-ui/solid"
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Progress,
+  ProgressIndicator,
+  Text,
+  useColorMode,
+} from "@hope-ui/solid"
+import "@fontsource/noto-sans-sc/400.css"
+import "@fontsource/noto-sans-sc/500.css"
+import "@fontsource/noto-sans-sc/600.css"
+import "@fontsource/noto-sans-sc/700.css"
 import { Route, Routes, useIsRouting } from "@solidjs/router"
 import {
   Component,
@@ -32,6 +48,10 @@ const Manage = lazy(() => import("~/pages/manage"))
 const Login = lazy(() => import("~/pages/login"))
 const Test = lazy(() => import("~/pages/test"))
 let initialized = false
+type StartupProgress = {
+  mode: "indeterminate" | "determinate"
+  value?: number
+}
 
 const AppRoutes = () => (
   <Routes base={base_path}>
@@ -87,25 +107,45 @@ const App: Component = () => {
   const [loadingMessage, setLoadingMessage] = createSignal(
     "Getting things ready ...",
   )
+  const [loadingProgress, setLoadingProgress] = createSignal<StartupProgress>({
+    mode: "indeterminate",
+  })
+  const [backgroundFallbackDuringStartup, setBackgroundFallbackDuringStartup] =
+    createSignal(false)
+  const [backgroundFallbackDialogOpen, setBackgroundFallbackDialogOpen] =
+    createSignal(false)
+  const setDeterminateProgress = (value: number) => {
+    setLoadingProgress((previous) => ({
+      mode: "determinate",
+      value: Math.max(previous.value ?? 0, value),
+    }))
+  }
   const [loading, data] = useLoading(async () => {
+    setLoadingProgress({ mode: "indeterminate" })
     setLoadingMessage("Loading settings ...")
     handleRespWithoutAuthAndNotify(
       (await r.get("/public/settings")) as Resp<Record<string, string>>,
       setSettings,
       (e) => setErr(err().concat(e)),
     )
+    setDeterminateProgress(25)
     setLoadingMessage("Loading archive support ...")
     handleRespWithoutAuthAndNotify(
       (await r.get("/public/archive_extensions")) as Resp<string[]>,
       setArchiveExtensions,
       (e) => setErr(err().concat(e)),
     )
+    setDeterminateProgress(45)
     setLoadingMessage("Preparing background ...")
-    await prepareAppBackground(
+    const backgroundResult = await prepareAppBackground(
       colorMode() === "dark" ? "dark" : "light",
       setLoadingMessage,
+      (progress) => setDeterminateProgress(45 + progress * 47),
     )
+    setDeterminateProgress(92)
+    setBackgroundFallbackDuringStartup(backgroundResult.fallback)
     setLoadingMessage("Starting OpenList ...")
+    setDeterminateProgress(100)
   })
   onMount(async () => {
     if (initialized) {
@@ -114,6 +154,9 @@ const App: Component = () => {
     }
     initialized = true
     await data()
+    if (backgroundFallbackDuringStartup()) {
+      setBackgroundFallbackDialogOpen(true)
+    }
     enableBackgroundSwitching = true
   })
   createEffect(() => {
@@ -150,9 +193,29 @@ const App: Component = () => {
           />
         </Match>
         <Match when={loading()}>
-          <FullScreenLoading message={loadingMessage()} />
+          <FullScreenLoading
+            message={loadingMessage()}
+            progress={loadingProgress().value}
+          />
         </Match>
       </Switch>
+      <Modal
+        opened={backgroundFallbackDialogOpen()}
+        onClose={() => setBackgroundFallbackDialogOpen(false)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t("global.background_load_failed_title")}</ModalHeader>
+          <ModalBody>
+            <Text>{t("global.background_load_failed_desc")}</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => setBackgroundFallbackDialogOpen(false)}>
+              {t("global.ok")}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
